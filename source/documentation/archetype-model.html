@@ -14,7 +14,7 @@ Here you can specify your database access configuration and expose the connectio
 
 By default Derby databases are supported, but you can tweak it to support Oracle, Mysql, PostGres, HSQL...
 
-The database configuration file must be located in the src/main/resources/OSGI-INF/blueprint/<whatever>.xml
+The database configuration file must be located in the src/main/resources/OSGI-INF/blueprint/&lt;whatever&gt;.xml
 
 Here's how to declare a datasource bean:
 {% codeblock lang:xml %}
@@ -84,7 +84,7 @@ public class HelloObject extends AbstractEntity implements Serializable{
 	private String helloMessage;
 }
 {% endcodeblock %}
-Then reference this class on the {% codeblock lang:xml %}<class>{% endcodeblock %} section of the src/main/resources/META-INF/persistence.xml file
+Then reference this class on the &lt;class&gt; section of the src/main/resources/META-INF/persistence.xml file
 
 
 Declaring DAOs
