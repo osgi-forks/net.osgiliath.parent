@@ -1,0 +1,47 @@
+---
+layout: page
+title: "Route archetypes"
+date: 2014-06-22 18:53
+comments: true
+sharing: true
+footer: true
+---
+<H1>Purpose</H1>
+The route module allow you to transform and route your messages see and read the <a href="http://camel.apache.org/enterprise-integration-patterns.html">Enterprise Integration Pattern</a>
+
+In order to use it, generate the skeleton with the Osgiliath route archetype, then, create a simple route:
+{% codeblock lang:java %}
+public class HelloRoute extends RouteBuilder {
+private DataFormat helloObjectJSonFormat = new JacksonDataFormat(
+			HelloObject.class); //sample transformation of Json object
+JAXBContext ctx = JAXBContext
+				.newInstance(new Class[] { HelloObject.class });
+		DataFormat jaxBDataFormat = new JaxbDataFormat(ctx);//Xml transformation of an object
+
+from("{{hello.helloJaxRSEntryPoint}}")
+				.filter(header("webSocketMsgType").isNotEqualTo("heartBeat"))
+.unmarshal(helloObjectJSonFormat)
+				.marshal(jaxBDataFormat)
+				.to("{{net.osgiliath.hello.business.url.helloservice}}/hello")
+}
+{% endcodeblock %}
+
+The URL/entrypoints in bracket {{}} are from the cfg file of the feature module while executing on runtime and from the src/test/resources/cfg one when unit testing.
+
+Then, you've to reference this route on the camelContext section of the blueprint.xml file and in the src/test/resources/spring (for testing).
+{% codeblock lang:xml %}
+<bean id="properties"
+		class="org.apache.camel.component.properties.PropertiesComponent">
+		<property name="location" value="blueprint:camelRoutes" />
+	</bean>
+<camelContext id="camelCtx"
+		xmlns="http://camel.apache.org/schema/blueprint">
+		<contextScan />
+		<jmxAgent id="agent" disabled="true" />
+		<routeBuilder ref="helloRoute"></routeBuilder>
+	</camelContext>
+<bean id="helloRoute" class="net.osgiliath.hello.routes.HelloRoute"/>
+{% endcodeblock %}
+You can also use @ContextName camel-cdi annotation and reference component in a <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.routes/net.osgiliath.hello.routes.cdi/src/main/java/conf/Components.java">configuration</a> class
+
+For more informations, check the hello example on <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/tree/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.routes">github</a>

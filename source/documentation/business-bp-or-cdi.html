@@ -1,0 +1,63 @@
+---
+layout: page
+title: "Blueprint or CDI"
+date: 2014-06-22 18:44
+comments: true
+sharing: true
+footer: true
+---
+Both business and routes archetypes are declined in two versions: a blueprint one and an xml one.
+
+These both frameworks have the goal to wire your beans together, but not the same way.
+
+Note that the both framework can NOT reference other beans produced by the other framework in the same bundle (e.g. you can't reference a cdi bean in blueprint and vice versa).
+
+<H1>Blueprint</H1>
+Blueprint is the most known and stable bean wiring OSGI framework.
+It's purpose is to wire beans together with the help of an xml descriptor located in src/main/resources/OSGI-INF/blueprint/[file].xml
+
+For example, if you want to inject a validator on one service like this:
+{% codeblock lang:java %}
+public class HelloServiceJaxRS implements net.osgiliath.hello.business.impl.HelloServiceJaxRS {
+	@Setter
+	private HelloObjectRepository helloObjectRepository;...
+{% endcodeblock %}
+You will have a counterpart in the xml file:
+{% codeblock lang:xml %}
+<bean id="helloServiceJaxRs"
+		class="net.osgiliath.hello.business.impl.services.impl.HelloServiceJaxRS">
+		<property name="helloObjectRepository" ref="helloObjectRepository"></property>
+	</bean>
+{% endcodeblock %}
+
+With blueprint, you can also reference properties (compendium), some custom namespaces (for example aries-jpa, aries-tx) or OSGI service.
+
+<h2>Traps</h2>
+All external classes referenced in a bp.xml file are not scanned by the bundle plugin so they're package-import are not added to the MANIFEST of your bundle, you'll have to add them manually in the osgi.bnd file
+
+<H1>CDI</H1>
+
+CDI wires beans via annotations on classes, fields...
+As the code is concise and do not repeat (no need for xml), it can add burden on your java classes, making them less readable.
+
+In order to enable a certain kind of annotations for your bundles, you've to add a Require-Capability header on your osgi.bnd file
+
+{% codeblock lang:xml %}
+Require-Capability: osgi.extender;filter:="(osgi.extender=pax.cdi)",\
+ org.ops4j.pax.cdi.extension;filter:="(extension=pax-cdi-extension)",\
+ org.ops4j.pax.cdi.extension;filter:="(extension=validation)",\
+ org.ops4j.pax.cdi.extension;filter:="(extension=jaxrs-cdi)",\
+ org.ops4j.pax.cdi.extension;filter:="(extension=osgiliath-camel-cdi-extension)",\
+ org.ops4j.pax.cdi.extension;filter:="(extension=camel-configadmin-extension)",\
+ org.ops4j.pax.cdi.extension;filter:="(extension=eager)"
+{% endcodeblock %}
+
+In addition, you must have at least a beans.xml file located on src/main/resources/META-INF: this file can also refer to alternatives beans (for example while testing), or interceptors (something that wraps your methods adding some behaviour to it).
+
+<H2>Traps</H2>
+<ul>
+<li>Config admin properties that are referenced via annotations are not updated while changing, also you can tell from which persistent id the property come from: beware to not publish the same property twice.</li>
+<li>@Consume camel annotation cannot be used with CDI, you have to make a route to handle messages.</li>
+<li>@ContextName camel annotation can only reference a 'general' camel context, you can't have many for a platform</li>
+<li>Jpa archetype cannot be CDI-driven as (for the time writing) only aries-jpa can handle persistence.</li>
+</ul>

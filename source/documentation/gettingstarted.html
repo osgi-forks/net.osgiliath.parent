@@ -1,0 +1,87 @@
+---
+layout: page
+title: "Getting started"
+date: 2014-06-22 18:28
+comments: true
+sharing: true
+footer: true
+---
+<H1>Prerequisite</H1>
+
+You must have a <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">JDK 1.6</a> or newer (JDK 8 is not supported for now) in order to compile.
+<a href="http://maven.apache.org/download.cgi">Maven 3.2.1 minimum</a> is used as a build tool.
+<a href="http://nodejs.org/download/">Npm</a> and <a href="http://rubyinstaller.org/">ruby</a> must be installed to compile the UI module.
+<a href="http://karaf.apache.org/index/community/download.html">Karaf 3.0.x</a> as a runtime environment.
+
+<H2>Installation</H2>
+
+For UI module:
+Run these commands before doing anything:
+{% codeblock lang:bash %}
+sudo npm -g install grunt-cli
+sudo npm -g install phantomjs
+sudo npm -g install bower
+gem install sass
+gem install compass
+{% endcodeblock %}
+
+<H2>IDE</H2>
+Development has been tested on an Eclipse platform (but can be supported by others IDE) with the following plugins:
+<ul>
+ 	<li><a href="http://projectlombok.org/">Lombok</a> (Mandatory): helpers for coding with far less LOC.</li>
+ 	<li>M2E: Maven support for eclipse (NOT mandatory, no M2E support for the UI module).</li>
+ 	<li>Egit: for source control (you can also use any other source control tool).</li>
+</ul>
+<h3>Other usefull plugins</h3>
+<ul>
+ <li><a href="https://github.com/spring-projects/spring-ide">Spring IDE</a> (Highly recommended too, but incompatible with the last M2E version): autocompletion and error detection in XML files (typically blueprint ones).</li>
+<li><a href="http://bndtools.org/">BndTools</a>: Manifest template graphical edition.</li>
+<li><a href="http://docs.codehaus.org/display/SONAR/Installing+SonarQube+in+Eclipse">Sonar IDE</a>: integration with Sonar quality server.</li>
+<li>Mylyn tools for Jenkins/Redmine: Continuous integration an issue management in Eclipse (not mandatory too).</li>
+<li><a href="http://moreunit.sourceforge.net/#download">MoreUnit to switch between tests classes and tested ones</a></li>
+<li><a href="http://jautodoc.sourceforge.net/index.html#download">JAutoDoc (use carefully, generated doc is sometimes no as accurate as a manually done one)</a></li>
+<li><a href="http://stackoverflow.com/questions/498426/mylyn-redmine-integration">Redmine Mylyn connector</a></li>
+<li><a href="http://aptana.com/products/studio3/download">Aptana studio for Javascript</a> not recommended, but this is the only viable tool for eclipse, prefer sublime text 3 if you have a little bit of money</li>
+<li>Instead of Aptana studio, you can install some of the <a href="http://www.nodeclipse.org/projects/">NodeEclipse plugin</a>, offering Markdown, js edition...</li>
+<li><a href="http://tools.jboss.org/features/apachecamel.html">Fuse IDE</a> also offer some Karaf shortcuts, Camel helpers...</li>
+</ul>
+
+<H1>QuickStart</H1>
+
+In eclipse go to new->Maven project and choose one of the net.osgiliath.archetype you want to work with (may be the parent one to begin, then others...).<module type> archetype on the archetype selection (take care of the 'include snapshot' checkbox if you want to use Osgiliath SNAPSHOT archetypes).
+
+To compile your project, right click on it->Run As-> Maven install.
+
+For UI module:
+You can use grunt at the root of your ui module instead of maven to interact within the build chain:
+grunt test: executes tests
+grunt serve: runs a server for your ui with livereload enabled
+grunt build: same as running mvn clean install on the same module.
+
+<H1>Framework list</H1>
+<ul>
+	<li><a href="http://projectlombok.org/">Lombok</a></li>
+	<li><a href="https://code.google.com/p/guava-libraries/wiki/GuavaExplained?tm=6">Guava</a></li>
+	<li><a href="http://aries.apache.org/modules/jndiproject.html">Aries JNDI</a></li>
+	<li><a href="http://aries.apache.org/modules/blueprint.html">Aries blueprint</a></li>
+	<li><a href="http://aries.apache.org/modules/jpaproject.html">Aries JPA</a></li>
+	<li><a href="http://openjpa.apache.org/builds/2.2.2/apache-openjpa/docs/main.html">OpenJPA</a></li>
+	<li><a href="http://docs.spring.io/spring-data/jpa/docs/1.4.2.RELEASE/reference/html/">Spring-Data-JPA</a></li>
+	<li><a href="http://aries.apache.org/modules/transactionsproject.html">Aries Tx</a></li>
+	<li><a href="http://activemq.apache.org/getting-started.html">ActiveMQ</a></li>
+	<li><a href="http://docs.jboss.org/hibernate/validator/4.3/reference/en-US/html/">Hibernate Validator</a></li>
+	<li><a href="https://ops4j1.jira.com/wiki/display/PAXEXAM3/Getting+Started">Pax-Exam</a></li>
+	<li>Pax-Exam-Karaf</li>
+	<li><a href="https://ops4j1.jira.com/wiki/display/PAXCDI/Getting+Started+for+OSGi+Users">Pax-CDI</a></li>
+	<li><a href="http://karaf.apache.org/manual/latest-2.3.x/quick-start.html">Karaf</a></li>
+	<li><a href="http://docs.spring.io/spring-security/site/start-here.html">Spring-security</a></li>
+	<li><a href="http://camel.apache.org/book-getting-started.html">Apache Camel</a></li>
+	<li><a href="http://cxf.apache.org/docs/jax-rs.html">Cxf-JaxRS</a></li>
+
+	<li><a href="http://angularjs.org/">AngularJs</a></li>
+	<li><a href="http://getbootstrap.com/2.3.2/getting-started.html">Twitter bootstrap</a></li>
+	<li><a href="http://gruntjs.com/">Grunt</a></li>
+	<li><a href="http://karma-runner.github.io/0.10/index.html">Karma</a></li>
+	<li><a href="http://phantomjs.org/">PhantomJs</a></li>
+	<li><a href="http://gotwarlost.github.io/istanbul/">Istanbul</a></li>
+</ul>

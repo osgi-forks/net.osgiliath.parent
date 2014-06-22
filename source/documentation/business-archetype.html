@@ -1,0 +1,195 @@
+---
+layout: page
+title: "Business archetype"
+date: 2014-06-22 18:48
+comments: true
+sharing: true
+footer: true
+---
+<H1>Purpose</H1>
+The business module is done to make calculation and processing on your datas. You'll be able to test it (unitary or in its full environment), export its services (synchronously or asynchronously), use functional programing.
+
+<H1>Referencing services</H1>
+You can reference OSGI services via two ways: via annotations or xml.
+
+<H2>Xml way: Blueprint</H2>
+
+Blueprint is an OSGI spec allowing you to reference OSGI services and inject it in your beans. The xml file to edit is located in the src/main/resources/OSGI-INF/blueprint/<context>.xml
+
+You can reference and inject in bean like <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.blueprint/src/main/resources/OSGI-INF/blueprint/business.osgi-context.xml" target="_blank">this</a>:
+{% codeblock lang:xml %}
+<reference id="helloObjectRepository"
+		interface="net.osgiliath.hello.model.jpa.repository.HelloObjectRepository" /><!-- OSGI service reference -->
+<bean id="helloServiceJMS"
+		class="net.osgiliath.hello.business.impl.services.impl.HelloServiceJMS">
+		<property name="helloObjectRepository" ref="helloObjectRepository"></property>
+	</bean><!-- Injection of the service reference in the HelloServicesJMS bean-->
+{% endcodeblock %}
+
+<H2>Service reference via annotation</H2>
+You can also inject your services <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.cdi/src/main/java/net/osgiliath/hello/business/impl/services/impl/HelloServiceJMS.java" target="_blank">via Annotations</a> (Pax-CDI).
+In order to do this, you've to tweak you pom.xml adding this feature:
+{% codeblock lang:xml %}
+<dependency>
+			<groupId>net.osgiliath.framework</groupId>
+			<version>${osgiliath.framework.maven.version}</version>
+			<artifactId>net.osgiliath.features.karaf-features-cdi</artifactId>
+			<type>xml</type>
+			<classifier>features</classifier>
+		</dependency>
+{% endcodeblock %}
+
+And add a beans.xml file in your src/main/resources/META-INF:
+{% codeblock lang:xml %}
+<beans
+   xmlns="http://java.sun.com/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+      http://java.sun.com/xml/ns/javaee
+      http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+    </beans>
+{% endcodeblock %}
+
+You can now expose and consume your services (and other cdi beans) this way:
+{% codeblock lang:java %}
+@ApplicationScoped
+public class Provider implements IProvider {}
+@Default
+@OsgiServiceProvider(classes= {IConsumer.class})
+public class Consumer implements IConsumer{
+@Inject
+@OsgiService
+private IProvider provider;
+}
+{% endcodeblock %}
+
+<H1>REST</H1>
+You can <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.blueprint/src/main/java/net/osgiliath/hello/business/impl/HelloServiceJaxRS.java" target="_blank">expose REST web services</a> easily.
+
+Using the REST API, you have to tell with path to access your services:
+{% codeblock lang:java %}
+@Path("/hello")
+public interface HelloRepository {
+	@POST
+	@Consumes(MediaType.APPLICATION_XML)
+	public <S extends HelloEntity> S save(S entity);
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	public List<HelloEntity> findAll();
+}
+{% endcodeblock %}
+
+And finally <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.blueprint/src/main/resources/OSGI-INF/blueprint/business.osgi-context.xml" target="_blank">expose the service via blueprint</a>:
+{% codeblock lang:xml %}
+<jaxrs:server id="helloServiceCXF" address="/helloService"><!-- exposes the service at the address <server>/cxf/helloService/<Path>-->
+		<jaxrs:serviceBeans>
+			<ref component-id="helloServiceJaxRs" /><!-- referenced blueprint bean to expose -->
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref component-id="jaxbProvider" />
+			<bean id="validationException"
+				class="helpers.cxf.exception.handling.jaxrs.mapper.ExceptionXmlMapper" /> <!-- validation exception post processor -->
+		</jaxrs:providers>
+	</jaxrs:server>
+	<cxf:bus>
+		<cxf:features>
+			<cxf:logging />
+		</cxf:features>
+	</cxf:bus>
+{% endcodeblock %}
+
+Or <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.cdi/src/main/java/net/osgiliath/hello/business/impl/services/impl/HelloServiceJaxRS.java" target="_blank">via annotations</a>:
+
+{% codeblock lang:java %}
+@Eager
+@CXFEndpoint(url="/helloService", providersClasses= {JAXBElementProvider.class, JSONProvider.class, ExceptionXmlMapper.class})
+public class HelloServiceJaxRS implements net.osgiliath.hello.business.impl.HelloServiceJaxRS {...
+{% endcodeblock %}
+<H1>Messaging</H1>
+
+You can also consume or produce asynchronous messages.
+In order to do this references jms factory on your blueprint context and exposes it with camel:
+
+{% codeblock lang:xml %}
+<reference id="jms" interface="org.apache.camel.Component"
+		availability="mandatory" filter="(component-type=jms)">
+	</reference>
+<camel:camelContext id="camelCtx">
+	</camel:camelContext>
+{% endcodeblock %}
+
+You can now consume queued messages and send to with the JMS template (take care, with CDI, @Consume doesn't work, so you have to make <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.cdi/src/main/java/net/osgiliath/hello/business/impl/services/impl/HelloServiceJMS.java" target="_blank">a consumer route</a>):
+{% codeblock lang:xml %}
+@Setter
+	@Produce(uri = "jms:queue:helloServiceQueueOut")
+	private ProducerTemplate producer;
+@Consume(uri = "jms:queue:helloServiceQueueIn")
+	public void persistHello(@Body HelloObject helloObject_p) {
+producer.sendBody(helloObject_p);
+}
+{% endcodeblock %}
+
+<H1>Validation</H1>
+
+You can use JSR303 bean validation to validate your fields.
+
+<a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.blueprint/src/main/resources/OSGI-INF/blueprint/business.osgi-context.xml" target="_blank">Reference the Validator Factory on the blueprint file and inject it in your beans</a>:
+
+{% codeblock lang:xml %}
+<reference id="validatorFactory" interface="javax.validation.ValidatorFactory"
+		availability="mandatory" />
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
+		factory-ref="validatorFactory" factory-method="getValidator" />
+
+<bean id="helloServiceJMS"
+		class="net.osgiliath.hello.business.impl.services.impl.HelloServiceJMS">
+		<property name="validator" ref="validator"></property>
+	</bean>
+{% endcodeblock %}
+
+Then, <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.model/net.osgiliath.hello.model.jpa/src/main/java/net/osgiliath/hello/model/jpa/model/HelloObject.java" target="_blank">annotate your model classes</a> with some contraints:
+
+{% codeblock lang:java %}
+@Data
+public class HelloObject {
+	@NotNull
+	private String message;}
+{% endcodeblock %}
+
+Finally, use the injected validator to validate your instances:
+{% codeblock lang:java %}
+Set<ConstraintViolation<HelloObject>> validationResults = validator
+				.validate(helloObject_p);
+		String errors = "";
+		if (!validationResults.isEmpty()) {....}
+{% endcodeblock %}
+
+You can also <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.cdi/src/main/java/conf/CDIValidator.java" target="_blank">bootstrap validator factory</a> via CDI and reference the interceptor in your <a href="https://github.com/OsgiliathEnterprise/net.osgiliath.parent/blob/master/net.osgiliath.samples/net.osgiliath.hello/net.osgiliath.hello.business/net.osgiliath.hello.business.impl.cdi/src/main/resources/META-INF/beans.xml" target="_blank">beans.xml</a> to have validation
+<H1>Integration testing</H1>
+I will pass through the unit testing case (you can use Mockito...) to jump to the integration tests part.
+
+First, you have to define an integration test feature on the feature module (available from the parent archetype) referencing all the underlying dependencies:
+
+{% codeblock lang:xml %}
+<feature name="mybundle.business.impl.itests" version="${project.version}">
+				<feature version='${osgiliath.framework.maven.version}'>osgiliath-business</feature>
+		<feature version='${project.version}'>mybundle.model</feature>
+		<bundle>mvn:${project.parent.groupId}/mybundle.business.spi/${project.version}/jar</bundle>
+	</feature>
+{% endcodeblock %}
+
+You can now make your integration test prefixing it by IT<test class name> (failsafe convention).
+{% codeblock lang:java %}
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class ITHelloServiceJaxRS extends AbstractKarafPaxExamConfiguration {
+@Inject//Waiting for the OSGI service before starting the tests
+	@Filter(timeout = 40000)
+	private HelloService helloService;
+@Test
+	public void testSayHello() throws Exception {
+helloService.sayHello("bob");
+}}
+
+{% endcodeblock %}

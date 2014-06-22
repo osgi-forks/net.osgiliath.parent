@@ -1,0 +1,37 @@
+---
+layout: page
+title: "Administration"
+date: 2014-06-22 18:58
+comments: true
+sharing: true
+footer: true
+---
+<h1>Database versioning</h1>
+
+Osgiliath Enterprise Framework facilitate your database migration with the help of <a href="http://www.liquibase.org/">Liquibase</a>
+
+<h2>Usage</h2>
+<p>
+As a reminder, the Model archetype is made of three module: a super one that's called model, a database one declaring your database and a JPA one declaring your model tables/pojos.
+</p>
+You first have to change the informations of your production database by editing the pom of the model one.
+<p>
+Then, after you've developed your model (manually editing jpa entities) and want to update your production db execute 'mvn clean install -Pdb-data' to retrieve all data from the production database on a changelog (the resulting xml changelog file will be located on the database module).
+</p>
+<p>
+Then, you've to retrieve the structural difference between your local entities and the production database.
+Again, execute 'mvn clean install -Pdb-diff' on the JPA module to retrieve that structural diff (again on an xml located in the database module).
+</p>
+Then, you've to tweak your datas (the first generated changelog) to map with your newer database structure if needed.
+<p>
+Finally, edit the db-changelog.xml of the database module to point to the two precedent xml files and deploy the new feature: your database structure and datas will be updated corresponding to your changes.
+</p>
+
+<h1>Querying all your REST services with Swagger</h1>
+<p>
+If you installed the osgiliath-business feature, you'll have access to an administration console to query your web services.
+</p>
+First, you have to annotate your model element as well as your services with <a href="https://helloreverb.com/developers/swagger">swagger</a> annotations (<a href="http://java.dzone.com/articles/swagger-make-developers-love">here are a useful tutorial</a>).
+
+You then will have access to the Swagger UI interface via http://<yourhost>:<port>/api-docs.
+On Swagger UI, you finally have to reference your server URL (i.e. http://localhost:8181/myServiceServer/api-docs).

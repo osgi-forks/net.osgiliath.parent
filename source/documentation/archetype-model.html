@@ -1,0 +1,172 @@
+---
+layout: page
+title: "Model Archetype"
+date: 2014-06-22 18:37
+comments: true
+sharing: true
+footer: true
+---
+It's purpose is to make the database access available, it can also exposes Dao's as services.
+It's composed of two modules: a database one and a model one.
+
+<H2>Database module</H2>
+Here you can specify your database access configuration and expose the connections as OSGI services that will be consumed by the model module.
+
+By default Derby databases are supported, but you can tweak it to support Oracle, Mysql, PostGres, HSQL...
+
+The database configuration file must be located in the src/main/resources/OSGI-INF/blueprint/<whatever>.xml
+
+Here's how to declare a datasource bean:
+{% codeblock lang:xml %}
+<bean id="dataSource" class="org.apache.derby.jdbc.EmbeddedXADataSource">
+	<property name="databaseName" value="myDatabase" />
+	<property name="createDatabase" value="create" />
+</bean>
+{% endcodeblock %}
+ Here's how to expose the database as a service without transaction support:
+{% codeblock lang:xml %}
+<service ref="dataSource" interface="javax.sql.DataSource">
+	<service-properties>
+		<entry key="osgi.jndi.service.name" value="jdbc/myDatabaseConnection" />
+	</service-properties>
+</service>
+{% endcodeblock %}
+And with transactional support:
+{% codeblock lang:xml %}
+<service ref="dataSource" interface="javax.sql.XADataSource">
+	<service-properties>
+		<entry key="osgi.jndi.service.name" value="jdbc/myXADatabaseConnection" />
+	</service-properties>
+</service>
+{% endcodeblock %}
+
+Defining an other kind of datasource:
+
+You must define a new feature on the parent project features list (see features sub-module), containing the OSGI compliant database driver (in order to see if it's OSGI compliant, check the META-INF/MANIFEST.MF file on the jar, it must contains an Export-Package  section.
+Then, modify the osgi.bnd file of the database module removing the org.apache.derby.jdbc
+package import and adding those of your driver.
+
+Finally change the dataSource bean declaration in the blueprint file.
+
+<H2>JPA module</H2>
+The model module is here to define your model objects (those which will be persisted) as well as the method for accessing them.
+
+Datasource connection definition:
+Edit the src/main/resources/META-INF/persistence.xml file of your module and change the
+{% codeblock lang:xml %}
+<jta-data-source>osgi:service/jdbc/myXADB</jta-data-source>
+{% endcodeblock %}
+and the
+{% codeblock lang:xml %}
+<non-jta-data-source>
+{% endcodeblock %}
+Sections.
+If you want to disable the transactional access, you've also to change the 'transaction-type' value to 'RESOURCE_LOCAL'
+
+Model object definition:
+In order to define a new model object, you've got to extends the ''AbstractEntity” abstract class on your src/main/lombok folder.
+All Java files that are located on this folder will be 'delombokized' I.e they will interpret the lombok annotation and generate the according Java code.
+Here's an example of a model entity:
+{% codeblock lang:java %}
+@Data//equals, hashcode, getters and setters
+@Builder//builder pattern
+@NoArgsConstructor//constructor
+@AllArgsConstructor//other constructor
+@Entity//persistence class declaration
+@XmlRootElement//xml marshalling
+@EqualsAndHashCode(callSuper=true)
+public class HelloObject extends AbstractEntity implements Serializable{
+	private static final transient long serialVersionUID = 6233801298404301547L;
+	@XmlElement//XML node
+	@NotNull(message="message must not be null")//Validation for null object
+	@Size(min=2, max=12, message="message size must be between 2 and 12")//size validation
+	@Pattern(regexp="[a-zA-Z0-9]+", message="must not contain special characters")//pattern validation
+	private String helloMessage;
+}
+{% endcodeblock %}
+Then reference this class on the {% codeblock lang:xml %}<class>{% endcodeblock %} section of the src/main/resources/META-INF/persistence.xml file
+
+
+Declaring DAOs
+In order to declare a Data Access Object its API via an interface:
+{% codeblock lang:java %}
+public interface HelloObjectRepository {
+	public Collection<? extends HelloObject> findByHelloObjectMessage(String message_p);
+	public <S extends HelloObject> S save(S entity);
+	public List<HelloObject> findAll();	
+	void deleteAll();
+}
+{% endcodeblock %}
+
+Then, with the help of spring data jpa, that make all the basic operations available, you've to code a very small implementation:
+{% codeblock lang:java %}
+public class HelloObjectJpaRepository extends SimpleJpaRepository<HelloObject, Long> implements HelloObjectRepository {
+	@Setter
+	private EntityManager entityManager;
+	public HelloObjectJpaRepository(Class<HelloObject> domainClass,
+			EntityManager em) {
+		super(domainClass, em);
+		setEntityManager(em);
+	}
+	@Override
+	public Collection<? extends HelloObject> findByHelloObjectMessage(String message_p) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<HelloObject> cq = cb.createQuery(HelloObject.class);
+		Root<HelloObject> helloObject = cq.from(HelloObject.class);
+		cq.select(helloObject);
+		Predicate where = cb.equal(helloObject.get("message"), message_p);
+		cq.where(where);
+		TypedQuery<HelloObject> q = entityManager.createQuery(cq);
+		List<HelloObject> result = q.getResultList();
+		return result;
+	}
+	@Override
+	public <S extends HelloObject> S save(S entity) {
+		return super.save(entity);
+	}
+{% endcodeblock %}
+
+Finally, you've to define the bean on the src/main/resources/OSGI-INF/blueprint/<whatever>.xml
+{% codeblock lang:xml %}
+<bean id="helloObjectRepository" class="net....repository.impl.HelloObjectJpaRepository">
+	<argument value="net...model.HelloObject"></argument><!-- model object-->
+	<jpa:context unitname="myPu"></jpa:context> <!-- name of the persistence unit in the META-INF/persistence.xml -->
+	<tx:transaction method="*" value="Required" /><!-- activate transaction support -->
+</bean>
+{% endcodeblock %}
+
+You can also expose this bean on the OSGI service registry as follow:
+{% codeblock lang:xml %}
+<service ref="helloObjectRepository" interface="net...repository.HelloObjectRepository" />
+{% endcodeblock %}
+
+<H3>Adding JMS, REST or integration Tests to the JPA module</H3>
+In order to add REST or JMS support to the JPA module, remove all net.osgiliath features on the pom.xml and add this one:
+{% codeblock lang:xml %}
+<dependency>
+	<groupId>net.osgiliath.framework</groupId>
+	<version>${osgiliath.framework.maven.version}</version>
+	<artifactId>net.osgiliath.features.karaf-features-full</artifactId>
+	<type>xml</type>
+	<classifier>features</classifier>
+</dependency>
+{% endcodeblock %}
+And the same for your projects feature (in the features module of your parent pom).
+Then, add these lines on your osgi.bnd Import-Package section:
+{% codeblock lang:xml %}
+ org.springframework.transaction,\
+ javax.transaction,\
+ org.apache.camel,\
+ org.springframework.validation.beanvalidation,\
+ *
+{% endcodeblock %}
+For JMS, and the following for REST:
+{% codeblock lang:xml %}
+ org.apache.cxf.jaxrs.provider,\
+ org.apache.cxf.jaxrs.provider.json,\
+ org.apache.cxf.jaxrs.impl.tl,\
+ helpers.cxf.exception.handling.jaxrs.mapper,\
+ *
+{% endcodeblock %}
+
+Finally, follow the REST, JMS or Itests sections of the business module documentation

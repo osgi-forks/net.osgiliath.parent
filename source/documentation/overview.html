@@ -1,0 +1,37 @@
+---
+layout: page
+title: "overview"
+date: 2014-06-22 18:22
+comments: true
+sharing: true
+footer: true
+---
+<H1>Overview</H1>
+
+The Osgiliath framework is composed of multiple features allowing you to develop faster, smoother and in a consistent way.
+You have access to multiple features:
+<ul>
+	<li> Database persistence with transaction management</li>
+	<li>Testable and smoother business code with out of the box functional programming, integration tests, shortened syntax, as well as messaging and http REST call at all levels.</li>
+	<li>Routing support allowing you to split; aggregate, transform your messages and redirect to the according services.</li>
+	<li>Ease deployment with hot swap support, multiple versions of the same bundle support, full application specification.</li>
+</ul>
+
+
+<H1>Architecture</H1>
+
+Osgiliath is made of five archetypes (project skeleton):
+
+A parent project archetype in order to wrap a set of other modules and define a consistent set of bundle that make a feature (or an application).
+
+A model archetype defining your databases access, your model objects and daos (data access object to query, save or retrieve model objects from the database), it can also expose service (REST or JMS way).
+
+A business archetype dedicated to business stuff (security, complex operations...) and that exposes services synchronously or asynchronously.
+
+A route service where you can split, aggregate, transform your messages to transmit to the according ui/services.
+
+A UI archetype where you can code your user interface with proven technologies.
+{% img center /images/overview/moduleArchitecture.jpg 300 255 'Osgiliath Communication' 'Osgiliath communication'%}
+
+<H1>Reference samples</H1>
+Soma reference samples are available on github (or maven) at this adress: https://github.com/OsgiliathEnterprise/net.osgiliath.parent/tree/master/net.osgiliath.samples
