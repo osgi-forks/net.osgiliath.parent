@@ -4,7 +4,7 @@
 
 url: http://osgiliathenterprise.github.io/net.osgiliath.parent
 title: Osgiliath Enterprise framework
-subtitle: OSGI to the mass!
+subtitle: OSGI to the masses!
 author: Charlie Mordant
 simple_search: https://www.google.com/search
 description: Osgiliath Enterprise framework
@@ -91,7 +91,7 @@ delicious_user:
 delicious_count: 3
 
 # Disqus Comments
-disqus_short_name:
+disqus_short_name: charliemordant
 disqus_show_comment_count: false
 
 # Google Analytics
