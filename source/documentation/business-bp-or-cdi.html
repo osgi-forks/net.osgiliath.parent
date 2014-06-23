@@ -6,13 +6,16 @@ comments: true
 sharing: true
 footer: true
 ---
+<article>
 Both business and routes archetypes are declined in two versions: a blueprint one and an xml one.
 
 These both frameworks have the goal to wire your beans together, but not the same way.
 
 Note that the both framework can NOT reference other beans produced by the other framework in the same bundle (e.g. you can't reference a cdi bean in blueprint and vice versa).
-
+<article>
+<header>
 <H1>Blueprint</H1>
+</header>
 Blueprint is the most known and stable bean wiring OSGI framework.
 It's purpose is to wire beans together with the help of an xml descriptor located in src/main/resources/OSGI-INF/blueprint/[file].xml
 
@@ -34,9 +37,11 @@ With blueprint, you can also reference properties (compendium), some custom name
 
 <h2>Traps</h2>
 All external classes referenced in a bp.xml file are not scanned by the bundle plugin so they're package-import are not added to the MANIFEST of your bundle, you'll have to add them manually in the osgi.bnd file
-
+</article>
+<article>
+<header>
 <H1>CDI</H1>
-
+</header>
 CDI wires beans via annotations on classes, fields...
 As the code is concise and do not repeat (no need for xml), it can add burden on your java classes, making them less readable.
 
@@ -61,3 +66,5 @@ In addition, you must have at least a beans.xml file located on src/main/resourc
 <li>@ContextName camel annotation can only reference a 'general' camel context, you can't have many for a platform</li>
 <li>Jpa archetype cannot be CDI-driven as (for the time writing) only aries-jpa can handle persistence.</li>
 </ul>
+</article>
+</article>

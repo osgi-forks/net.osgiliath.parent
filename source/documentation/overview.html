@@ -6,7 +6,7 @@ comments: true
 sharing: true
 footer: true
 ---
-
+<article>
 The Osgiliath framework is composed of multiple features allowing you to develop faster, smoother and in a consistent way.
 You have access to multiple features:
 <ul>
@@ -16,9 +16,10 @@ You have access to multiple features:
 	<li>Ease deployment with hot swap support, multiple versions of the same bundle support, full application specification.</li>
 </ul>
 
-
+<article>
+<header>
 <H1>Architecture</H1>
-
+</header>
 Osgiliath is made of five archetypes (project skeleton):
 
 A parent project archetype in order to wrap a set of other modules and define a consistent set of bundle that make a feature (or an application).
@@ -31,6 +32,12 @@ A route service where you can split, aggregate, transform your messages to trans
 
 A UI archetype where you can code your user interface with proven technologies.
 {% img center /images/overview/moduleArchitecture.jpg 300 255 'Osgiliath Communication' 'Osgiliath communication'%}
-
+</article>
+<article>
+<header>
 <H1>Reference samples</H1>
-Soma reference samples are available on github (or maven) at this adress: https://github.com/OsgiliathEnterprise/net.osgiliath.parent/tree/master/net.osgiliath.samples
+</header>
+A reference samples are available on github (or maven) at this adress: https://github.com/OsgiliathEnterprise/net.osgiliath.parent/tree/master/net.osgiliath.samples
+It consists of a simple webapp asking for an input an answering the same input. Its workflow starts from a <mark>Websocket</mark> <mark>JSON</mark> message that's transformed to <mark>Xml</mark> <mark>REST</mark> one then <mark>validated</mark>, <mark>persisted</mark> on database, then resent to the client the same way. 
+</article>
+</article>

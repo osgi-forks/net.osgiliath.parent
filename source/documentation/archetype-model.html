@@ -6,10 +6,13 @@ comments: true
 sharing: true
 footer: true
 ---
+<article>
 It's purpose is to make the database access available, it can also exposes Dao's as services.
 It's composed of two modules: a database one and a model one.
-
+<article>
+<header>
 <H2>Database module</H2>
+</header>
 Here you can specify your database access configuration and expose the connections as OSGI services that will be consumed by the model module.
 
 By default Derby databases are supported, but you can tweak it to support Oracle, Mysql, PostGres, HSQL...
@@ -47,24 +50,20 @@ Then, modify the osgi.bnd file of the database module removing the org.apache.de
 package import and adding those of your driver.
 
 Finally change the dataSource bean declaration in the blueprint file.
-
+</article>
+<article>
+<header>
 <H2>JPA module</H2>
+</header>
 The model module is here to define your model objects (those which will be persisted) as well as the method for accessing them.
 
-Datasource connection definition:
-Edit the src/main/resources/META-INF/persistence.xml file of your module and change the
-{% codeblock lang:xml %}
-<jta-data-source>osgi:service/jdbc/myXADB</jta-data-source>
-{% endcodeblock %}
-and the
-{% codeblock lang:xml %}
-<non-jta-data-source>
-{% endcodeblock %}
-Sections.
+<p>Datasource connection definition:
+Edit the src/main/resources/META-INF/persistence.xml file of your module and change the &lt;jta-data-source&gt;osgi:service/jdbc/myXADB&lt;/jta-data-source&gt; and the &lt;non-jta-data-source&gt; Sections.
 If you want to disable the transactional access, you've also to change the 'transaction-type' value to 'RESOURCE_LOCAL'
-
+</p>
+<p>
 Model object definition:
-In order to define a new model object, you've got to extends the ''AbstractEntity” abstract class on your src/main/lombok folder.
+In order to define a new model object, you've got to extends the 'AbstractEntity' abstract class on your src/main/lombok folder.
 All Java files that are located on this folder will be 'delombokized' I.e they will interpret the lombok annotation and generate the according Java code.
 Here's an example of a model entity:
 {% codeblock lang:java %}
@@ -85,8 +84,8 @@ public class HelloObject extends AbstractEntity implements Serializable{
 }
 {% endcodeblock %}
 Then reference this class on the &lt;class&gt; section of the src/main/resources/META-INF/persistence.xml file
-
-
+</p>
+<p>
 Declaring DAOs
 In order to declare a Data Access Object its API via an interface:
 {% codeblock lang:java %}
@@ -125,7 +124,8 @@ public class HelloObjectJpaRepository extends SimpleJpaRepository<HelloObject, L
 		return super.save(entity);
 	}
 {% endcodeblock %}
-
+</p>
+<p>
 Finally, you've to define the bean on the src/main/resources/OSGI-INF/blueprint/<whatever>.xml
 {% codeblock lang:xml %}
 <bean id="helloObjectRepository" class="net....repository.impl.HelloObjectJpaRepository">
@@ -139,8 +139,11 @@ You can also expose this bean on the OSGI service registry as follow:
 {% codeblock lang:xml %}
 <service ref="helloObjectRepository" interface="net...repository.HelloObjectRepository" />
 {% endcodeblock %}
-
+</p>
+<article>
+<header>
 <H3>Adding JMS, REST or integration Tests to the JPA module</H3>
+</header>
 In order to add REST or JMS support to the JPA module, remove all net.osgiliath features on the pom.xml and add this one:
 {% codeblock lang:xml %}
 <dependency>
@@ -168,5 +171,7 @@ For JMS, and the following for REST:
  helpers.cxf.exception.handling.jaxrs.mapper,\
  *
 {% endcodeblock %}
-
 Finally, follow the REST, JMS or Itests sections of the business module documentation
+</article>
+</article>
+</article>
