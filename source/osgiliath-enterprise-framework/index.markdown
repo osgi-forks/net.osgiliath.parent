@@ -49,10 +49,7 @@ As an addition, each kind of tests outputs metrics that are interpretable by qua
 <H1>Based on standards and cutting edge technologies</H1>
 </header>
 
-<H2>Standard based</H2>
-<p>
 When possible, capabilities are provided by Java standards (JSRs or OSGIRS...) or de-facto ones: Bean Validation 1.1, JMS 2, JaxRS 2, JPA 2, JTA 1.1, JMX, JaxB, JsonP, Blueprint services, DI, CDI 1.1, Servlet 3, AngularJS
-</p>
 </article>
 <article>
 <header>
