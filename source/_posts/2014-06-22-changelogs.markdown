@@ -5,11 +5,22 @@ date: 2014-06-22 19:00:13 +0200
 comments: true
 categories: changelogs
 ---
+<h3>0.0.7</h3>
+<ol>
+<li>Hawt IO managing support</li>
+<li>Swagger REST service querying with CDI modules</li>
+<li>New Angular file layout</li>
+<li>Optional Scala programming support</li>
+<li>Bugfixes on REST exception mapper</li>
+<li>Sample now handles errors</li>
+<li>Multiples dependencies versions updates (as well as Javascript ones)</li>
+<li>Updated Javadoc plugin to handle large projects</li>
+</ol>
 <H3>0.0.6</H3>
 <ol>
 <li>Liquibase database versioning integration</li>
 <li>JaxRS 2.0 support</li>
-<li>Swagger API/ui REST queries integration</li>
+<li>Swagger API/ui REST queries integration (only with blueprint)</li>
 <li>Jaxb Xsd generation</li>
 </ol>
 <H3>0.0.5</H3>
