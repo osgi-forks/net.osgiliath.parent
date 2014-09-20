@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://osgiliathenterprise.github.io/net.osgiliath.parent
+url: http://OsgiliathEnterprise.github.io/net
 title: Osgiliath Enterprise framework
 subtitle: OSGI to the masses!
 author: Charlie Mordant
@@ -29,7 +29,7 @@ email:
 root: /net.osgiliath.parent
 permalink: /blog/:year/:month/:day/:title/
 source: source
-destination: public/net.osgiliath.parent
+destination: _deploy
 plugins: plugins
 code_dir: downloads/code
 category_dir: blog/categories
