@@ -1,0 +1,5 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Helloworld sample routes with blueprint,utils,XStreamDataFormatWithGoodClassLoader,15,0,0,0,5,0,1,0,1,0
+Helloworld sample routes with blueprint,net.osgiliath.hello.routes,HelloRoute.new Processor() {...},15,6,0,0,2,1,1,1,1,1
+Helloworld sample routes with blueprint,net.osgiliath.hello.routes,HelloRoute.new Processor() {...},0,27,0,0,0,7,0,2,0,2
+Helloworld sample routes with blueprint,net.osgiliath.hello.routes,HelloRoute,0,185,0,0,0,13,0,4,0,4

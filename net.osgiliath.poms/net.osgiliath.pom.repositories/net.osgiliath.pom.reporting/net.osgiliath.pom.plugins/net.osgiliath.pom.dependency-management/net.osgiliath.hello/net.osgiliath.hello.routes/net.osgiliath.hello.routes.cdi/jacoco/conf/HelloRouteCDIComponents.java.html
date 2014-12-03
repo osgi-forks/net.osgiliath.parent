@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HelloRouteCDIComponents.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Helloworld sample routes with CDI</a> &gt; <a href="index.source.html" class="el_package">conf</a> &gt; <span class="el_source">HelloRouteCDIComponents.java</span></div><h1>HelloRouteCDIComponents.java</h1><pre class="source lang-java linenums">package conf;
+
+/*
+ * #%L
+ * net.osgiliath.features.karaf-features.itests.messaging.cdi
+ * %%
+ * Copyright (C) 2013 - 2014 Osgiliath corp
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import lombok.extern.slf4j.Slf4j;
+import net.osgiliath.helpers.camel.ThrownExceptionMessageToInBodyProcessor;
+import net.osgiliath.helpers.cdi.eager.Eager;
+
+import org.apache.camel.Component;
+import org.apache.camel.Processor;
+import org.apache.camel.component.http.HttpComponent;
+import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.dataformat.xmljson.XmlJsonDataFormat;
+import org.apache.camel.spi.DataFormat;
+import org.ops4j.pax.cdi.api.OsgiService;
+/**
+ * 
+ * @author charliemordant
+ * CDI configuration
+ */
+<span class="nc" id="L43">@Slf4j</span>
+@Eager
+<span class="nc" id="L45">public class HelloRouteCDIComponents {</span>
+    /**
+     * Messaging component import
+     */
+    @Inject
+    @OsgiService(filter = &quot;(component-type=jms)&quot;, dynamic = true)
+    private Component jms;
+    /**
+     * transactional messaging component
+     */
+    @Inject
+    @OsgiService(filter = &quot;(component-type=jmsXA)&quot;, dynamic = true)
+    private Component jmsXA;
+    /**
+     * 
+     * @return JSR303 message processor
+     */
+    @Produces
+    @Named(&quot;thrownExceptionMessageToInBodyProcessor&quot;)
+    public Processor getThrownExceptionMessageToInBodyProcessor() {
+<span class="nc" id="L65">	log.info(&quot;Inject Processor in body&quot;);</span>
+<span class="nc" id="L66">	return new ThrownExceptionMessageToInBodyProcessor();</span>
+    }
+    /**
+     * @return JMS component CDI export
+     */
+    @Produces
+    @Named(&quot;jms&quot;)
+    public Component getJms() {
+<span class="nc" id="L74">	log.info(&quot;Inject jms&quot;);</span>
+<span class="nc" id="L75">	return jms;</span>
+    }
+    /**
+     * @return JMS XA component CDI export
+     */
+    @Produces
+    @Named(&quot;jmsXA&quot;)
+    public Component getJmsXA() {
+<span class="nc" id="L83">	log.info(&quot;Inject jmsXA&quot;);</span>
+<span class="nc" id="L84">	return jmsXA;</span>
+    }
+    /**
+     * @return HTTP component CDI export
+     */
+    @Produces
+    @Named(&quot;http&quot;)
+    public Component getHttp() {
+<span class="nc" id="L92">	log.info(&quot;Inject httpComponent&quot;);</span>
+<span class="nc" id="L93">	return new HttpComponent();</span>
+    }
+    /**
+     * @return Json component CDI export
+     */
+    @Produces
+    @Named(&quot;json&quot;)
+    public DataFormat getJacksonDataFormat() {
+<span class="nc" id="L101">	return new JacksonDataFormat();</span>
+    }
+    /**
+     * @return XmlJson component CDI export
+     */
+    @Produces
+    @Named(&quot;xmljson&quot;)
+    public DataFormat getXmlJsonDataFormat() {
+<span class="nc" id="L109">	return new XmlJsonDataFormat();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

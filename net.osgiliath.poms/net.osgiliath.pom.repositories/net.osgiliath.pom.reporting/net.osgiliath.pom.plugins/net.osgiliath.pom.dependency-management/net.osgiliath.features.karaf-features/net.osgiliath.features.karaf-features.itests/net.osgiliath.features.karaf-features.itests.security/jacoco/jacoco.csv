@@ -1,0 +1,6 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Osgiliath integration tests security,security,MUser,207,0,32,0,14,0,33,0,17,0
+Osgiliath integration tests security,security,AUTHORITY,46,0,0,0,6,0,5,0,5,0
+Osgiliath integration tests security,security,MAuthority,11,0,0,0,3,0,3,0,3,0
+Osgiliath integration tests security,security,RepositoryUserDetailsService,35,0,4,0,8,0,6,0,4,0
+Osgiliath integration tests security,security,LoginPasswordSecurityService,86,0,0,0,27,0,10,0,10,0

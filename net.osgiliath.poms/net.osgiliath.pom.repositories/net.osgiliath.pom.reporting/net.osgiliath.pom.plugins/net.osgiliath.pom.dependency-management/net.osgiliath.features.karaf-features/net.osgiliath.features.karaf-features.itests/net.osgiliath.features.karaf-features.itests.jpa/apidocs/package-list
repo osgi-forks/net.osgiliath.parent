@@ -1,0 +1,3 @@
+net.osgiliath.jpa.model
+net.osgiliath.jpa.repository
+net.osgiliath.jpa.repository.impl

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HelloServiceJaxRS.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Blueprint configured business module</a> &gt; <a href="index.source.html" class="el_package">net.osgiliath.hello.business.impl.services.impl</a> &gt; <span class="el_source">HelloServiceJaxRS.java</span></div><h1>HelloServiceJaxRS.java</h1><pre class="source lang-java linenums">package net.osgiliath.hello.business.impl.services.impl;
+
+/*
+ * #%L
+ * net.osgiliath.hello.business.impl
+ * %%
+ * Copyright (C) 2013 Osgiliath
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.util.Collection;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import net.osgiliath.hello.business.model.Hellos;
+import net.osgiliath.hello.model.jpa.model.HelloEntity;
+import net.osgiliath.hello.model.jpa.repository.HelloObjectRepository;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
+/**
+ * Sample of a business service with JaxRS
+ * 
+ * @author charliemordant
+ * 
+ */
+<span class="fc" id="L46">@Slf4j</span>
+<span class="fc" id="L47">public class HelloServiceJaxRS implements</span>
+	net.osgiliath.hello.business.impl.HelloServiceJaxRS {
+    /**
+     * Repository to persist data
+     */
+<span class="fc" id="L52">    @Setter</span>
+    private HelloObjectRepository helloObjectRepository;
+    /**
+     * JSR 303 validator
+     */
+    // JSR 303 validator
+<span class="fc" id="L58">    @Setter</span>
+    private Validator validator;
+    /**
+     * Saves the object or throw an exception if the Object is not valid
+     */
+    @Override
+    public final void persistHello(final HelloEntity helloObject_p) {
+<span class="fc" id="L65">	this.log.info(&quot;persisting new message with jaxrs: &quot;</span>
+		+ helloObject_p.getHelloMessage());
+<span class="fc" id="L67">	final Set&lt;ConstraintViolation&lt;HelloEntity&gt;&gt; validationResults = validator</span>
+		.validate(helloObject_p);
+<span class="fc" id="L69">	final StringBuilder errors = new StringBuilder(&quot;&quot;);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">	if (!validationResults.isEmpty()) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">	    for (ConstraintViolation&lt;HelloEntity&gt; violation : validationResults) {</span>
+<span class="fc" id="L72">		this.log.info(&quot;subscription error, validating user:&quot;</span>
+			+ violation.getMessage());
+<span class="fc" id="L74">		errors.append(violation.getPropertyPath()).append(&quot;: &quot;)</span>
+		.append(violation.getMessage().replaceAll(&quot;\&quot;&quot;, &quot;&quot;)).append(&quot;;&quot;);
+<span class="fc" id="L76">	    }</span>
+<span class="fc" id="L77">	    throw new ValidationException(errors.toString());</span>
+	}
+<span class="fc" id="L79">	this.helloObjectRepository.save(helloObject_p);</span>
+
+<span class="fc" id="L81">    }</span>
+    /**
+     * get all hellos
+     */
+    @Override
+    public Hellos getHellos() {
+<span class="fc" id="L87">	final Collection&lt;HelloEntity&gt; helloObjects = this.helloObjectRepository.findAll();</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">	if (helloObjects.isEmpty()) {</span>
+<span class="nc" id="L89">	    throw new UnsupportedOperationException(</span>
+		    &quot;You should not call this method when there is no Hello yet !&quot;);
+	}
+<span class="fc" id="L92">	return Hellos</span>
+		.builder()
+		.helloCollection(
+			Lists.newArrayList(Iterables.transform(helloObjects,
+				this.helloObjectToStringFunction))).build();
+    }
+    /**
+     * Function that transforms helloEntity to String
+     */
+    // Guava function waiting for Java 8
+<span class="fc" id="L102">    private Function&lt;HelloEntity, String&gt; helloObjectToStringFunction = new Function&lt;HelloEntity, String&gt;() {</span>
+
+	@Override
+	public String apply(HelloEntity arg0) {
+<span class="fc" id="L106">	    return arg0.getHelloMessage();</span>
+	}
+    };
+    /**
+     * Deletes all entities
+     */
+    @Override
+    public void deleteAll() {
+<span class="fc" id="L114">	this.helloObjectRepository.deleteAll();</span>
+<span class="fc" id="L115">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

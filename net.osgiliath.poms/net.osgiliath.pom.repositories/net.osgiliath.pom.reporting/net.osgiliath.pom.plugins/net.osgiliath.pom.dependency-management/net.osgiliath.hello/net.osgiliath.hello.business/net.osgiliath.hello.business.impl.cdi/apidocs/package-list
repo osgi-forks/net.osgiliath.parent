@@ -1,0 +1,3 @@
+conf
+net.osgiliath.hello.business.cdi.impl
+net.osgiliath.hello.business.cdi.impl.services.impl

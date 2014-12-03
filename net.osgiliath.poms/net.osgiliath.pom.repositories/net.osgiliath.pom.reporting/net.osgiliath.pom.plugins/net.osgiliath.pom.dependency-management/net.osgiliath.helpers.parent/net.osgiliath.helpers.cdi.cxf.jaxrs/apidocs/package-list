@@ -1,0 +1,4 @@
+net.osgiliath.helpers.cdi.cxf.jaxrs
+net.osgiliath.helpers.cdi.cxf.jaxrs.internal
+net.osgiliath.helpers.cdi.cxf.jaxrs.internal.registry
+net.osgiliath.helpers.cdi.cxf.jaxrs.internal.trackers

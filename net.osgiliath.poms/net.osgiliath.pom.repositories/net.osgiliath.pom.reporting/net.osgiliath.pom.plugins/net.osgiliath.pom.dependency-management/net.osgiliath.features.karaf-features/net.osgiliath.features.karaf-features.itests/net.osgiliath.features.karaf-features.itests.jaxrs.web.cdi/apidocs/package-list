@@ -1,0 +1,4 @@
+conf
+net.osgiliath.features.karaf.jaxrs.web.cdi
+net.osgiliath.features.karaf.jaxrs.web.cdi.impl
+net.osgiliath.features.karaf.jaxrs.web.cdi.model

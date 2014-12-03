@@ -1,0 +1,6 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Helloworld sample routes with CDI,net.osgiliath.hello.routes.cdi,HelloRoute,0,181,0,0,0,12,0,3,0,3
+Helloworld sample routes with CDI,net.osgiliath.hello.routes.cdi,HelloRoute.new Processor() {...},0,27,0,0,0,7,0,2,0,2
+Helloworld sample routes with CDI,net.osgiliath.hello.routes.cdi,HelloRoute.new Processor() {...},15,6,0,0,2,1,1,1,1,1
+Helloworld sample routes with CDI,utils,CDIXStreamDataFormatWithGoodClassLoader,15,0,0,0,5,0,1,0,1,0
+Helloworld sample routes with CDI,conf,HelloRouteCDIComponents,41,0,0,0,12,0,8,0,8,0

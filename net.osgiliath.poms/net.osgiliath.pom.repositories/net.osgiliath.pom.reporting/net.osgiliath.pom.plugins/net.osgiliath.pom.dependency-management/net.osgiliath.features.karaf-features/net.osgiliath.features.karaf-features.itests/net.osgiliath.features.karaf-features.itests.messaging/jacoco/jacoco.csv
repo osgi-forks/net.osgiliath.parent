@@ -1,0 +1,6 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Osgiliath integration tests for messaging,net.osgiliath.messaging,HelloEntity.HelloEntityBuilder,38,0,0,0,1,0,5,0,5,0
+Osgiliath integration tests for messaging,net.osgiliath.messaging,HelloEntity,139,0,22,0,5,0,22,0,11,0
+Osgiliath integration tests for messaging,net.osgiliath.messaging,Hellos,83,0,14,0,2,0,14,0,7,0
+Osgiliath integration tests for messaging,net.osgiliath.messaging.repository.impl,HelloJMSRepository,91,0,4,0,26,0,10,0,8,0
+Osgiliath integration tests for messaging,net.osgiliath.messaging.repository.impl,HelloJMSRepository.new MessageCreator() {...},15,0,0,0,3,0,2,0,2,0

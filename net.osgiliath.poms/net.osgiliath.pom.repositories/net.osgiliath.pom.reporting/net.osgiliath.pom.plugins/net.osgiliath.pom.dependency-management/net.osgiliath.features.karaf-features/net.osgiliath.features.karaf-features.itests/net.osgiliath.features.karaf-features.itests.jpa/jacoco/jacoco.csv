@@ -1,0 +1,5 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Osgiliath integration tests JPA,net.osgiliath.jpa.repository.impl,HelloJpaRepository,49,0,0,0,13,0,3,0,3,0
+Osgiliath integration tests JPA,net.osgiliath.jpa.model,HelloEntity,725,0,107,0,5,0,106,0,51,0
+Osgiliath integration tests JPA,net.osgiliath.jpa.model,HelloEntity.HelloEntityBuilder,38,0,0,0,1,0,5,0,5,0
+Osgiliath integration tests JPA,net.osgiliath.jpa.model,HelloEntity_,3,0,0,0,1,0,1,0,1,0

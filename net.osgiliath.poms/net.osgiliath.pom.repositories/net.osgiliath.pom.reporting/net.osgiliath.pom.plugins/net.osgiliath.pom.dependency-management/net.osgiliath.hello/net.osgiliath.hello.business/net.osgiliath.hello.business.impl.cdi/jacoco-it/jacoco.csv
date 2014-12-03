@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+CDI configured business module,net.osgiliath.hello.business.cdi.impl.services.impl,HelloServiceJMS,9,64,1,1,3,13,2,5,1,5
+CDI configured business module,net.osgiliath.hello.business.cdi.impl.services.impl,HelloServiceJMS.new Processor() {...},0,14,0,0,0,3,0,2,0,2
+CDI configured business module,net.osgiliath.hello.business.cdi.impl.services.impl,HelloServiceJaxRS,5,53,1,1,1,12,1,5,0,5
+CDI configured business module,net.osgiliath.hello.business.cdi.impl.services.impl,HelloServiceJaxRS.new Function() {...},0,9,0,0,0,2,0,2,0,2
+CDI configured business module,net.osgiliath.hello.business.cdi.impl.services.impl,HelloServiceJMS.new Function() {...},0,9,0,0,0,2,0,2,0,2
+CDI configured business module,conf,HelloCDIValidator,5,0,0,0,2,0,2,0,2,0
+CDI configured business module,conf,SwaggerBeanConfig,66,0,0,0,15,0,3,0,3,0
+CDI configured business module,conf,SwaggerAPIAccessService,8,0,0,0,3,0,2,0,2,0
+CDI configured business module,conf,HelloComponents,13,0,0,0,4,0,3,0,3,0

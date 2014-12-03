@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HelloServiceImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Osgiliath integration tests JaxRS CDI</a> &gt; <a href="index.source.html" class="el_package">net.osgiliath.features.karaf.jaxrs.cdi.impl</a> &gt; <span class="el_source">HelloServiceImpl.java</span></div><h1>HelloServiceImpl.java</h1><pre class="source lang-java linenums">package net.osgiliath.features.karaf.jaxrs.cdi.impl;
+
+/*
+ * #%L
+ * net.osgiliath.features.karaf-features.itests.jaxrs.web
+ * %%
+ * Copyright (C) 2013 - 2014 Osgiliath corp
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+import helpers.cxf.exception.handling.jaxrs.mapper.ExceptionXmlMapper;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import net.osgiliath.features.karaf.jaxrs.cdi.HelloServiceJaxRS;
+import net.osgiliath.features.karaf.jaxrs.cdi.model.HelloObject;
+import net.osgiliath.features.karaf.jaxrs.cdi.model.Hellos;
+import net.osgiliath.helpers.cdi.cxf.jaxrs.CXFEndpoint;
+import net.osgiliath.helpers.cdi.eager.Eager;
+
+import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider;
+import com.wordnik.swagger.jaxrs.listing.ResourceListingProvider;
+
+/**
+ * 
+ * @author charliemordant REST Service implementation for testing purpose (the
+ *         only noticeable thing is the CXFEndpoint annotation
+ */
+@Eager
+@ApplicationScoped
+@CXFEndpoint(url = &quot;/helloService&quot;, providersClasses = {
+	JAXBElementProvider.class, JSONProvider.class, ExceptionXmlMapper.class, ResourceListingProvider.class, ApiDeclarationProvider.class })
+<span class="nc" id="L53">public class HelloServiceImpl implements HelloServiceJaxRS {</span>
+    /**
+     * Instances elements
+     */
+<span class="nc" id="L57">    private Collection&lt;HelloObject&gt; objects = new ArrayList&lt;HelloObject&gt;();</span>
+
+    /**
+     * Registering instance
+     */
+    @Override
+    public void persistHello(final HelloObject helloObject) {
+<span class="nc" id="L64">	this.objects.add(helloObject);</span>
+
+<span class="nc" id="L66">    }</span>
+
+    /**
+     * Returns registered instances
+     */
+    @Override
+    public Hellos getHellos() {
+
+<span class="nc" id="L74">	return new Hellos(Lists.newArrayList(Iterables.transform(this.objects,</span>
+<span class="nc" id="L75">		new Function&lt;HelloObject, String&gt;() {</span>
+
+		    @Override
+		    public String apply(final HelloObject input) {
+<span class="nc" id="L79">			return input.getHelloMessage();</span>
+		    };
+		})));
+    }
+
+	@Override
+	public void deleteHellos() {
+<span class="nc" id="L86">		this.objects.clear();</span>
+<span class="nc" id="L87">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

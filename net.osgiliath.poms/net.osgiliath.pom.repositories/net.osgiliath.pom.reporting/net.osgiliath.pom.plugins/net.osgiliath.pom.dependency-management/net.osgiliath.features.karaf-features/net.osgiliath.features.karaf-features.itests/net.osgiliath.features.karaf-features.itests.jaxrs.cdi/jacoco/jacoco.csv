@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Osgiliath integration tests JaxRS CDI,net.osgiliath.features.karaf.jaxrs.cdi.model,Hellos.HellosBuilder,26,0,0,0,1,0,4,0,4,0
+Osgiliath integration tests JaxRS CDI,net.osgiliath.features.karaf.jaxrs.cdi.model,Hellos,93,0,14,0,4,0,16,0,9,0
+Osgiliath integration tests JaxRS CDI,net.osgiliath.features.karaf.jaxrs.cdi.model,HelloObject,93,0,14,0,4,0,16,0,9,0
+Osgiliath integration tests JaxRS CDI,net.osgiliath.features.karaf.jaxrs.cdi.model,HelloObject.HelloObjectBuilder,26,0,0,0,1,0,4,0,4,0
+Osgiliath integration tests JaxRS CDI,net.osgiliath.features.karaf.jaxrs.cdi.impl,HelloServiceImpl.new Function() {...},9,0,0,0,2,0,2,0,2,0
+Osgiliath integration tests JaxRS CDI,net.osgiliath.features.karaf.jaxrs.cdi.impl,HelloServiceImpl,30,0,0,0,7,0,4,0,4,0
+Osgiliath integration tests JaxRS CDI,conf,SwaggerBeanConfig,69,0,0,0,15,0,3,0,3,0
+Osgiliath integration tests JaxRS CDI,conf,SwaggerAPIAccessService,8,0,0,0,3,0,2,0,2,0

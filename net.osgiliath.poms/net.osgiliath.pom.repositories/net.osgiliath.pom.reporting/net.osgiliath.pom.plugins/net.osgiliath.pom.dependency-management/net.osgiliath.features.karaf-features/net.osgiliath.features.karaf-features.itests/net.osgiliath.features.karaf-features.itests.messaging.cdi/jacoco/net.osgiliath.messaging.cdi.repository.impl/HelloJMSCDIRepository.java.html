@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HelloJMSCDIRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Osgiliath integration tests messaging with cdi</a> &gt; <a href="index.source.html" class="el_package">net.osgiliath.messaging.cdi.repository.impl</a> &gt; <span class="el_source">HelloJMSCDIRepository.java</span></div><h1>HelloJMSCDIRepository.java</h1><pre class="source lang-java linenums">package net.osgiliath.messaging.cdi.repository.impl;
+
+/*
+ * #%L
+ * net.osgiliath.hello.model.jpa
+ * %%
+ * Copyright (C) 2013 Osgiliath
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import net.osgiliath.helpers.cdi.eager.Eager;
+import net.osgiliath.messaging.cdi.HelloEntity;
+import net.osgiliath.messaging.cdi.Hellos;
+import net.osgiliath.messaging.cdi.repository.HelloCDIRepository;
+
+import org.apache.camel.Body;
+import org.apache.camel.Consume;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.cdi.ContextName;
+import org.apache.camel.cdi.Uri;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 
+ * @author charliemordant JMS Service implementation
+ */
+@ApplicationScoped
+@Eager
+@ContextName
+<span class="nc" id="L50">public class HelloJMSCDIRepository implements HelloCDIRepository {</span>
+	/**
+	 * Logger
+	 */
+<span class="nc" id="L54">	private static final Logger LOG = LoggerFactory</span>
+			.getLogger(HelloJMSCDIRepository.class);
+	/**
+	 * entities registry
+	 */
+<span class="nc" id="L59">	private List&lt;HelloEntity&gt; entities = new ArrayList&lt;HelloEntity&gt;();</span>
+	/**
+	 * message producer for integrtaion test
+	 */
+	@Inject
+	@Uri(&quot;jms:queue:helloServiceQueueOut&quot;)
+	private ProducerTemplate producer;
+	/**
+	 * message producer for internal consuming
+	 */
+	@Inject
+	@Uri(&quot;jms:queue:helloServiceQueueIn2&quot;)
+	private ProducerTemplate internalProducer;
+	/**
+	 * Producer for the route
+	 */
+	@Inject
+	@Uri(&quot;jms:queue:helloServiceQueueIn&quot;)
+	private ProducerTemplate routeProducer;
+
+	/**
+	 * Saves entities
+	 */
+	public &lt;S extends HelloEntity&gt; void directSave(@Body S entity) {
+<span class="nc" id="L83">		internalProducer.sendBody(entity);</span>
+<span class="nc" id="L84">		routeProducer.sendBody(entity);</span>
+
+<span class="nc" id="L86">	}</span>
+
+	/**
+	 * Internal consumer (not working for now)
+	 * 
+	 * @param entity
+	 *            to consume
+	 */
+	@Consume(uri = &quot;jms:queue:helloServiceQueueIn2&quot;)
+	public &lt;S extends HelloEntity&gt; void save(@Body S entity) {
+<span class="nc" id="L96">		LOG.info(&quot;receiving message on internally (via @Consumer&quot;);</span>
+<span class="nc" id="L97">		this.entities.add(entity);</span>
+<span class="nc" id="L98">		final Hellos hellos = new Hellos();</span>
+<span class="nc" id="L99">		final Collection&lt;HelloEntity&gt; retEntities = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L100">		retEntities.add(entity);</span>
+<span class="nc" id="L101">		hellos.setEntities(retEntities);</span>
+<span class="nc" id="L102">		LOG.info(&quot;Sending hellos: &quot; + hellos);</span>
+<span class="nc" id="L103">		this.producer.sendBody(hellos);</span>
+<span class="nc" id="L104">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

@@ -1,0 +1,4 @@
+conf
+net.osgiliath.messaging.cdi
+net.osgiliath.messaging.cdi.repository
+net.osgiliath.messaging.cdi.repository.impl

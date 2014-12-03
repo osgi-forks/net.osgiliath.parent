@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HelloRoute.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Helloworld sample routes with blueprint</a> &gt; <a href="index.source.html" class="el_package">net.osgiliath.hello.routes</a> &gt; <span class="el_source">HelloRoute.java</span></div><h1>HelloRoute.java</h1><pre class="source lang-java linenums">package net.osgiliath.hello.routes;
+
+/*
+ * #%L
+ * net.osgiliath.hello.routes
+ * %%
+ * Copyright (C) 2013 Osgiliath
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.io.InputStream;
+import java.io.StringWriter;
+
+import javax.xml.bind.JAXBContext;
+
+import lombok.Setter;
+import net.osgiliath.hello.business.model.Hellos;
+import net.osgiliath.hello.model.jpa.model.HelloEntity;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.converter.jaxb.JaxbDataFormat;
+import org.apache.camel.spi.DataFormat;
+import org.apache.commons.io.IOUtils;
+
+/**
+ * 
+ * @author charliemordant
+ * sample route, see apache camel and EIP keyword on the net ;)
+ */
+<span class="fc" id="L46">public class HelloRoute extends RouteBuilder {</span>
+    /**
+     * Jackson converters
+     */
+<span class="fc" id="L50">    private DataFormat helloObjectJSonFormat = new JacksonDataFormat(</span>
+	    HelloEntity.class, Hellos.class);
+    /**
+     * processes JSR303 validation errors
+     */
+<span class="fc" id="L55">    @Setter</span>
+    private Processor thrownExceptionMessageToInBodyProcessor;
+    /**
+     * xmljson dataformat
+     */
+<span class="fc" id="L60">    @Setter</span>
+    private DataFormat xmljson;
+    /**
+     * changes inputstream to string
+     */
+<span class="fc" id="L65">    private Processor octetsStreamToStringProcessor = new Processor() {</span>
+
+	@Override
+	public void process(Exchange exchange) throws Exception {
+<span class="fc" id="L69">	    InputStream bodyObject = exchange.getIn()</span>
+		    .getBody(InputStream.class);
+<span class="fc" id="L71">	    StringWriter writer = new StringWriter();</span>
+<span class="fc" id="L72">	    IOUtils.copy(bodyObject, writer);</span>
+<span class="fc" id="L73">	    String theString = writer.toString();</span>
+<span class="fc" id="L74">	    exchange.getIn().setBody(theString);</span>
+
+<span class="fc" id="L76">	}</span>
+    };
+    /**
+     * Configures routes
+     */
+    @Override
+    public void configure() throws Exception {
+<span class="fc" id="L83">	JAXBContext ctx = JAXBContext.newInstance(new Class[] {</span>
+		HelloEntity.class, Hellos.class });
+<span class="fc" id="L85">	final DataFormat jaxBDataFormat = new JaxbDataFormat(ctx);</span>
+
+<span class="fc" id="L87">	from(&quot;{{hello.MessagingEntryPoint}}&quot;)</span>
+		.log(LoggingLevel.INFO, &quot;Received message: \&quot;${in.body}\&quot;&quot;)
+		.filter(header(&quot;webSocketMsgType&quot;).isNotEqualTo(&quot;heartBeat&quot;))
+		.choice()
+		.when(header(&quot;httpRequestType&quot;).isEqualTo(&quot;POST&quot;))
+		.to(&quot;direct:persistObject&quot;)
+		.endChoice()
+		.otherwise()
+		.setBody(
+			simple(&quot;{error:  'Command not supported for the JaxRS queue'}&quot;))
+		.to(&quot;direct:toError&quot;);
+
+<span class="fc" id="L99">	from(&quot;direct:persistObject&quot;)</span>
+		.setHeader(Exchange.HTTP_METHOD, constant(&quot;POST&quot;))
+		.setHeader(Exchange.CONTENT_TYPE, constant(&quot;application/xml&quot;))
+		.unmarshal(this.helloObjectJSonFormat)
+		.marshal(jaxBDataFormat)
+		.log(LoggingLevel.INFO, &quot;marshalled: ${body}&quot;)
+		.doTry()
+		.inOnly(&quot;{{net.osgiliath.hello.business.url.restservice}}/hello&quot;)
+		.to(&quot;direct:updateTopic&quot;)
+		.doCatch(Exception.class)
+		.log(LoggingLevel.WARN,
+			&quot;Validation exception encountered&quot;)
+		.to(&quot;direct:helloValidationError&quot;).end();
+
+<span class="fc" id="L113">	from(&quot;direct:updateTopic&quot;)</span>
+		.setHeader(Exchange.HTTP_METHOD, constant(&quot;GET&quot;))
+		.setHeader(Exchange.CONTENT_TYPE, constant(&quot;application/xml&quot;))
+		.inOut(&quot;{{net.osgiliath.hello.business.url.restservice}}/hello&quot;)
+		.inOut(&quot;direct:marshall&quot;).to(&quot;{{hello.MessagingEndPoint}}&quot;);
+
+<span class="fc" id="L119">	from(&quot;direct:marshall&quot;).process(octetsStreamToStringProcessor)</span>
+		.log(&quot;hello data retrieved from JaxRS : ${in.body}&quot;)
+		.marshal(xmljson).log(LoggingLevel.INFO, &quot;marshalled: ${body}&quot;);
+
+<span class="fc" id="L123">	from(&quot;direct:helloValidationError&quot;)</span>
+		.process(this.thrownExceptionMessageToInBodyProcessor)
+<span class="fc" id="L125">		.process(new Processor() {</span>
+
+		    @Override
+		    public void process(Exchange exchange) throws Exception {
+<span class="nc" id="L129">			exchange.getIn().setBody(</span>
+				exchange.getIn().getBody(String.class)
+					.replaceAll(&quot;\&quot;&quot;, &quot;'&quot;)
+					.replaceAll(&quot;\n&quot;, &quot;&quot;));
+<span class="nc" id="L133">		    }</span>
+		})
+		.setBody(simple(&quot;{\&quot;error\&quot;: \&quot;${body}\&quot;}&quot;))
+		.log(&quot;Subscription error: ${body}&quot;)
+		.to(&quot;{{hello.MessagingErrors}}&quot;);
+
+<span class="fc" id="L139">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>
